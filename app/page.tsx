@@ -10,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { TutorGrid } from "@/components/tutor-grid"
 import { featuredTutors } from "@/lib/tutors-data"
-import { Search, MapPin, Users, Clock, Star, ChevronRight, GraduationCap, CheckCircle, X } from "lucide-react"
+import { Search, MapPin, Users, Clock, Star, ChevronRight, GraduationCap, CheckCircle, X, MessageSquareText } from "lucide-react"
 import {
   Select,
   SelectContent,
@@ -97,8 +97,8 @@ export default function Home() {
     )
   }, [locationSearch])
 
-  // Exercises and corrections data
-  const exercisesData = [
+  // Corrections data
+  const corrigesData = [
     {
       id: 1,
       title: "Corrigés de 9e",
@@ -120,6 +120,10 @@ export default function Home() {
       href: "/corriges/11e",
       isComingSoon: false
     },
+  ]
+
+  // Exercises data
+  const exercicesData = [
     {
       id: 4,
       title: "Exercices de 9e (prochainement)",
@@ -359,20 +363,53 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Exercices et Corrigés */}
+      {/* Corrigés */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Corrigés Mathématiques 9-10-11 et Exercices</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">Corrigés Mathématiques 9-10-11</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {exercisesData.map((exercise) => (
-              <div key={exercise.id} className="group">
-                {exercise.isComingSoon ? (
+            {corrigesData.map((corrige) => (
+              <div key={corrige.id} className="group">
+                <Link href={corrige.href}>
+                  <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+                    <CardContent className="p-0">
+                      <div className="relative">
+                        <Image
+                          src={corrige.image}
+                          alt={corrige.title}
+                          width={400}
+                          height={250}
+                          className="w-full h-48 object-contain rounded-t-lg bg-gray-50 group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="p-6">
+                        <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors text-center">
+                          {corrige.title}
+                        </h3>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Exercices */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">Exercices de maths de 9-11e HarmoS</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {exercicesData.map((exercice) => (
+              <div key={exercice.id} className="group">
+                {exercice.isComingSoon ? (
                   <Card className="cursor-not-allowed opacity-60 h-full">
                     <CardContent className="p-0">
                       <div className="relative">
                         <Image
-                          src={exercise.image}
-                          alt={exercise.title}
+                          src={exercice.image}
+                          alt={exercice.title}
                           width={400}
                           height={250}
                           className="w-full h-48 object-contain rounded-t-lg bg-gray-50"
@@ -380,19 +417,19 @@ export default function Home() {
                       </div>
                       <div className="p-6">
                         <h3 className="font-semibold text-gray-500 text-center">
-                          {exercise.title}
+                          {exercice.title}
                         </h3>
                       </div>
                     </CardContent>
                   </Card>
                 ) : (
-                  <Link href={exercise.href}>
+                  <Link href={exercice.href}>
                     <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
                       <CardContent className="p-0">
                         <div className="relative">
                           <Image
-                            src={exercise.image}
-                            alt={exercise.title}
+                            src={exercice.image}
+                            alt={exercice.title}
                             width={400}
                             height={250}
                             className="w-full h-48 object-contain rounded-t-lg bg-gray-50 group-hover:scale-105 transition-transform duration-300"
@@ -400,7 +437,7 @@ export default function Home() {
                         </div>
                         <div className="p-6">
                           <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors text-center">
-                            {exercise.title}
+                            {exercice.title}
                           </h3>
                         </div>
                       </CardContent>
@@ -414,9 +451,9 @@ export default function Home() {
       </section>
 
       {/* Popular Subjects */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Matières populaires</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">Quelques matières</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {popularSubjects.map((subject) => (
               <Link
@@ -430,7 +467,7 @@ export default function Home() {
                     <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors">
                       {subject.name}
                     </h3>
-                    <p className="text-sm text-gray-600 mt-1">{subject.count}</p>
+                    {/*<p className="text-sm text-gray-600 mt-1">{subject.count}</p>*/}
                   </CardContent>
                 </Card>
               </Link>
@@ -443,10 +480,7 @@ export default function Home() {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Professeurs en vedette</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Découvrez nos enseignants les mieux notés, sélectionnés pour leur excellence pédagogique
-            </p>
+            <h2 className="text-3xl font-bold mb-4">Quelques enseignants</h2>
           </div>
           <TutorGrid
             tutors={featuredTutors}
@@ -481,7 +515,7 @@ export default function Home() {
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="h-8 w-8 text-white" />
+                <MessageSquareText className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold mb-2">2. Contactez</h3>
               <p className="text-gray-600">
