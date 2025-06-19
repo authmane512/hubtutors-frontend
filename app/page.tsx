@@ -1,14 +1,16 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Search, MapPin, Users, Clock, Star, ChevronRight, GraduationCap, CheckCircle } from "lucide-react"
+import { TutorGrid } from "@/components/tutor-grid"
+import { featuredTutors } from "@/lib/tutors-data"
+import { Search, MapPin, Users, Clock, Star, ChevronRight, GraduationCap, CheckCircle, X } from "lucide-react"
 import {
   Select,
   SelectContent,
@@ -21,6 +23,125 @@ export default function Home() {
   const router = useRouter()
   const [subject, setSubject] = useState("")
   const [location, setLocation] = useState("")
+  const [subjectSearch, setSubjectSearch] = useState("")
+  const [locationSearch, setLocationSearch] = useState("")
+  const [isSubjectSelectOpen, setIsSubjectSelectOpen] = useState(false)
+  const [isLocationSelectOpen, setIsLocationSelectOpen] = useState(false)
+
+  // Complete subjects list for search
+  const allSubjects = [
+    { value: "mathematiques", label: "Mathématiques", icon: "📐" },
+    { value: "francais", label: "Français", icon: "📚" },
+    { value: "anglais", label: "Anglais", icon: "🇬🇧" },
+    { value: "allemand", label: "Allemand", icon: "🇩🇪" },
+    { value: "italien", label: "Italien", icon: "🇮🇹" },
+    { value: "espagnol", label: "Espagnol", icon: "🇪🇸" },
+    { value: "sciences", label: "Sciences", icon: "🔬" },
+    { value: "physique", label: "Physique", icon: "⚛️" },
+    { value: "chimie", label: "Chimie", icon: "🧪" },
+    { value: "biologie", label: "Biologie", icon: "🧬" },
+    { value: "histoire", label: "Histoire", icon: "📜" },
+    { value: "geographie", label: "Géographie", icon: "🌍" },
+    { value: "philosophie", label: "Philosophie", icon: "🤔" },
+    { value: "economie", label: "Économie", icon: "💰" },
+    { value: "informatique", label: "Informatique", icon: "💻" },
+    { value: "musique", label: "Musique", icon: "🎵" },
+    { value: "art", label: "Art", icon: "🎨" },
+    { value: "sport", label: "Sport", icon: "⚽" },
+    { value: "latin", label: "Latin", icon: "🏛️" },
+    { value: "grec", label: "Grec", icon: "🏺" },
+  ]
+
+  // Complete locations list for search
+  const allLocations = [
+    { value: "en-ligne", label: "En ligne", icon: "💻" },
+    { value: "zurich", label: "Zurich", icon: "🏙️" },
+    { value: "geneve", label: "Genève", icon: "🏛️" },
+    { value: "lausanne", label: "Lausanne", icon: "🏔️" },
+    { value: "bale", label: "Bâle", icon: "🌉" },
+    { value: "berne", label: "Berne", icon: "🐻" },
+    { value: "winterthur", label: "Winterthur", icon: "🏘️" },
+    { value: "lucerne", label: "Lucerne", icon: "🏔️" },
+    { value: "saint-gall", label: "Saint-Gall", icon: "🏰" },
+    { value: "lugano", label: "Lugano", icon: "🌊" },
+    { value: "bienne", label: "Bienne", icon: "🏞️" },
+    { value: "thoune", label: "Thoune", icon: "🏔️" },
+    { value: "koniz", label: "Köniz", icon: "🏘️" },
+    { value: "la-chaux-de-fonds", label: "La Chaux-de-Fonds", icon: "⌚" },
+    { value: "fribourg", label: "Fribourg", icon: "🏰" },
+    { value: "schaffhouse", label: "Schaffhouse", icon: "🏰" },
+    { value: "coire", label: "Coire", icon: "🏔️" },
+    { value: "neuchatel", label: "Neuchâtel", icon: "🏞️" },
+    { value: "vernier", label: "Vernier", icon: "🏘️" },
+    { value: "uster", label: "Uster", icon: "🏘️" },
+    { value: "sion", label: "Sion", icon: "🏔️" },
+    { value: "lancy", label: "Lancy", icon: "🏘️" },
+    { value: "yverdon-les-bains", label: "Yverdon-les-Bains", icon: "♨️" },
+    { value: "zug", label: "Zoug", icon: "🏞️" },
+    { value: "emmen", label: "Emmen", icon: "🏘️" },
+  ]
+
+  // Filter subjects based on search
+  const filteredSubjects = useMemo(() => {
+    if (!subjectSearch) return allSubjects
+    return allSubjects.filter(subject =>
+      subject.label.toLowerCase().includes(subjectSearch.toLowerCase())
+    )
+  }, [subjectSearch])
+
+  // Filter locations based on search
+  const filteredLocations = useMemo(() => {
+    if (!locationSearch) return allLocations
+    return allLocations.filter(location =>
+      location.label.toLowerCase().includes(locationSearch.toLowerCase())
+    )
+  }, [locationSearch])
+
+  // Exercises and corrections data
+  const exercisesData = [
+    {
+      id: 1,
+      title: "Corrigés de 9e",
+      image: "/images/maths-9e.jpg",
+      href: "/corriges/9e",
+      isComingSoon: false
+    },
+    {
+      id: 2,
+      title: "Corrigés de 10e",
+      image: "/images/maths-10e.jpg",
+      href: "/corriges/10e",
+      isComingSoon: false
+    },
+    {
+      id: 3,
+      title: "Corrigés de 11e",
+      image: "/images/maths-11e.jpg",
+      href: "/corriges/11e",
+      isComingSoon: false
+    },
+    {
+      id: 4,
+      title: "Exercices de 9e (prochainement)",
+      image: "/images/maths-9e.jpg",
+      href: "#",
+      isComingSoon: true
+    },
+    {
+      id: 5,
+      title: "Exercices de 10e",
+      image: "/images/maths-10e.jpg",
+      href: "/exercices/10e",
+      isComingSoon: false
+    },
+    {
+      id: 6,
+      title: "Exercices de 11e",
+      image: "/images/maths-11e.jpg",
+      href: "/exercices/11e",
+      isComingSoon: false
+    },
+  ]
 
   const popularSubjects = [
     { name: "Mathématiques", icon: "📐", count: "2,345 profs" },
@@ -33,44 +154,7 @@ export default function Home() {
     { name: "Chimie", icon: "🧪", count: "543 profs" },
   ]
 
-  const featuredTutors = [
-    {
-      id: 1,
-      name: "Marie Dubois",
-      subject: "Mathématiques",
-      location: "Genève",
-      price: "60 CHF/h",
-      rating: 4.9,
-      reviews: 87,
-      experience: "8 ans",
-      avatar: "/images/placeholder-avatar.svg",
-      bio: "Professeure certifiée avec une approche pédagogique innovante"
-    },
-    {
-      id: 2,
-      name: "Jean-Pierre Martin",
-      subject: "Français",
-      location: "Lausanne",
-      price: "55 CHF/h",
-      rating: 4.8,
-      reviews: 62,
-      experience: "6 ans",
-      avatar: "/images/placeholder-avatar.svg",
-      bio: "Spécialiste en littérature française et préparation d'examens"
-    },
-    {
-      id: 3,
-      name: "Sophie Müller",
-      subject: "Allemand",
-      location: "Zurich",
-      price: "65 CHF/h",
-      rating: 5.0,
-      reviews: 104,
-      experience: "10 ans",
-      avatar: "/images/placeholder-avatar.svg",
-      bio: "Native allemande, experte en préparation aux certificats Goethe"
-    },
-  ]
+
 
   const testimonials = [
     {
@@ -96,6 +180,18 @@ export default function Home() {
     },
   ]
 
+  const handleSubjectChange = (value: string) => {
+    setSubject(value)
+    setSubjectSearch("")
+    setIsSubjectSelectOpen(false)
+  }
+
+  const handleLocationChange = (value: string) => {
+    setLocation(value)
+    setLocationSearch("")
+    setIsLocationSelectOpen(false)
+  }
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (subject) {
@@ -106,50 +202,150 @@ export default function Home() {
 
   return (
     <div className="flex flex-col">
+      {/* Promotional Banner */}
+      <section className="bg-primary text-white py-3 px-4">
+        <div className="container mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-3">
+            <div className="text-center md:text-left">
+              <p className="text-sm md:text-base font-medium">
+                30 min de cours gratuit et sans engagement puis dès 20 CHF/heure !
+              </p>
+            </div>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="bg-white text-primary hover:bg-gray-100 font-medium whitespace-nowrap"
+            >
+              Obtenir un cours gratuit
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-primary/10 via-white to-primary/5 pt-20 pb-32">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-              Trouvez le professeur particulier idéal en Suisse
+              Trouvez l'enseignant particulier idéal en Suisse
             </h1>
             <p className="text-xl text-gray-600 mb-10">
-              Plus de 10 000 enseignants qualifiés pour vous accompagner dans votre réussite
+              Des enseignants variés pour tous les niveaux et de nombreuses matières
             </p>
 
             {/* Search Form */}
             <form onSubmit={handleSearch} className="bg-white rounded-lg shadow-lg p-4 md:p-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="md:col-span-1">
-                  <Select value={subject} onValueChange={setSubject}>
+                  <Select
+                    value={subject}
+                    onValueChange={handleSubjectChange}
+                    open={isSubjectSelectOpen}
+                    onOpenChange={setIsSubjectSelectOpen}
+                  >
                     <SelectTrigger className="w-full h-12">
                       <SelectValue placeholder="Choisir une matière" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="mathematiques">Mathématiques</SelectItem>
-                      <SelectItem value="francais">Français</SelectItem>
-                      <SelectItem value="anglais">Anglais</SelectItem>
-                      <SelectItem value="allemand">Allemand</SelectItem>
-                      <SelectItem value="sciences">Sciences</SelectItem>
-                      <SelectItem value="physique">Physique</SelectItem>
-                      <SelectItem value="chimie">Chimie</SelectItem>
-                      <SelectItem value="biologie">Biologie</SelectItem>
-                      <SelectItem value="histoire">Histoire</SelectItem>
-                      <SelectItem value="geographie">Géographie</SelectItem>
+                    <SelectContent className="max-h-[300px]">
+                      <div className="sticky top-0 bg-white p-2 border-b">
+                        <div className="relative">
+                          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                          <Input
+                            placeholder="Rechercher une matière..."
+                            value={subjectSearch}
+                            onChange={(e) => setSubjectSearch(e.target.value)}
+                            className="pl-8 h-8 text-sm"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          {subjectSearch && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setSubjectSearch("")
+                              }}
+                              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      <div className="max-h-[200px] overflow-y-auto">
+                        {filteredSubjects.length > 0 ? (
+                          filteredSubjects.map((subjectOption) => (
+                            <SelectItem key={subjectOption.value} value={subjectOption.value}>
+                              <div className="flex items-center space-x-2">
+                                <span>{subjectOption.icon}</span>
+                                <span>{subjectOption.label}</span>
+                              </div>
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <div className="p-2 text-sm text-gray-500 text-center">
+                            Aucune matière trouvée
+                          </div>
+                        )}
+                      </div>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="md:col-span-1">
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                    <Input
-                      type="text"
-                      placeholder="Lieu ou 'en ligne'"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      className="pl-10 h-12"
-                    />
-                  </div>
+                  <Select
+                    value={location}
+                    onValueChange={handleLocationChange}
+                    open={isLocationSelectOpen}
+                    onOpenChange={setIsLocationSelectOpen}
+                  >
+                    <SelectTrigger className="w-full h-12">
+                      <div className="flex items-center">
+                        <MapPin className="h-4 w-4 text-gray-400 mr-2" />
+                        <SelectValue placeholder="Lieu ou 'en ligne'" />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      <div className="sticky top-0 bg-white p-2 border-b">
+                        <div className="relative">
+                          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                          <Input
+                            placeholder="Rechercher un lieu..."
+                            value={locationSearch}
+                            onChange={(e) => setLocationSearch(e.target.value)}
+                            className="pl-8 h-8 text-sm"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          {locationSearch && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setLocationSearch("")
+                              }}
+                              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      <div className="max-h-[200px] overflow-y-auto">
+                        {filteredLocations.length > 0 ? (
+                          filteredLocations.map((locationOption) => (
+                            <SelectItem key={locationOption.value} value={locationOption.value}>
+                              <div className="flex items-center space-x-2">
+                                <span>{locationOption.icon}</span>
+                                <span>{locationOption.label}</span>
+                              </div>
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <div className="p-2 text-sm text-gray-500 text-center">
+                            Aucun lieu trouvé
+                          </div>
+                        )}
+                      </div>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="md:col-span-1">
                   <Button type="submit" className="w-full h-12 bg-primary hover:bg-primary/90 text-white">
@@ -159,31 +355,60 @@ export default function Home() {
                 </div>
               </div>
             </form>
+          </div>
+        </div>
+      </section>
 
-            {/* Quick Stats */}
-            <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="flex items-center justify-center space-x-2">
-                <Users className="h-8 w-8 text-primary" />
-                <div className="text-left">
-                  <p className="text-2xl font-bold text-gray-900">10,000+</p>
-                  <p className="text-sm text-gray-600">Professeurs actifs</p>
-                </div>
+      {/* Exercices et Corrigés */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">Exercices et Corrigés</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {exercisesData.map((exercise) => (
+              <div key={exercise.id} className="group">
+                {exercise.isComingSoon ? (
+                  <Card className="cursor-not-allowed opacity-60 h-full">
+                    <CardContent className="p-0">
+                      <div className="relative">
+                        <Image
+                          src={exercise.image}
+                          alt={exercise.title}
+                          width={400}
+                          height={250}
+                          className="w-full h-48 object-contain rounded-t-lg bg-gray-50"
+                        />
+                      </div>
+                      <div className="p-6">
+                        <h3 className="font-semibold text-gray-500 text-center">
+                          {exercise.title}
+                        </h3>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <Link href={exercise.href}>
+                    <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+                      <CardContent className="p-0">
+                        <div className="relative">
+                          <Image
+                            src={exercise.image}
+                            alt={exercise.title}
+                            width={400}
+                            height={250}
+                            className="w-full h-48 object-contain rounded-t-lg bg-gray-50 group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                        <div className="p-6">
+                          <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors text-center">
+                            {exercise.title}
+                          </h3>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                )}
               </div>
-              <div className="flex items-center justify-center space-x-2">
-                <GraduationCap className="h-8 w-8 text-primary" />
-                <div className="text-left">
-                  <p className="text-2xl font-bold text-gray-900">50,000+</p>
-                  <p className="text-sm text-gray-600">Élèves satisfaits</p>
-                </div>
-              </div>
-              <div className="flex items-center justify-center space-x-2">
-                <Clock className="h-8 w-8 text-primary" />
-                <div className="text-left">
-                  <p className="text-2xl font-bold text-gray-900">24h</p>
-                  <p className="text-sm text-gray-600">Réponse moyenne</p>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -223,51 +448,12 @@ export default function Home() {
               Découvrez nos enseignants les mieux notés, sélectionnés pour leur excellence pédagogique
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            {featuredTutors.map((tutor) => (
-              <Link key={tutor.id} href={`/enseignant/${tutor.id}`}>
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center space-x-4">
-                        <Avatar className="h-12 w-12">
-                          <AvatarImage src={tutor.avatar} alt={tutor.name} />
-                          <AvatarFallback>{tutor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <CardTitle className="text-lg">{tutor.name}</CardTitle>
-                          <CardDescription>{tutor.subject}</CardDescription>
-                        </div>
-                      </div>
-                      <Badge variant="secondary" className="bg-primary/10 text-primary">
-                        {tutor.price}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-gray-600 mb-4">{tutor.bio}</p>
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center space-x-4">
-                        <div className="flex items-center">
-                          <MapPin className="h-4 w-4 text-gray-400 mr-1" />
-                          <span className="text-gray-600">{tutor.location}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <Clock className="h-4 w-4 text-gray-400 mr-1" />
-                          <span className="text-gray-600">{tutor.experience}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center">
-                        <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                        <span className="font-semibold">{tutor.rating}</span>
-                        <span className="text-gray-600 ml-1">({tutor.reviews})</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
+          <TutorGrid
+            tutors={featuredTutors}
+            columns="3"
+            maxItems={3}
+            className="mb-8"
+          />
           <div className="text-center">
             <Link href="/rechercher">
               <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white">
