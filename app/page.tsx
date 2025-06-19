@@ -362,7 +362,7 @@ export default function Home() {
       {/* Exercices et Corrigés */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Exercices et Corrigés</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">Corrigés Mathématiques 9-10-11 et Exercices</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {exercisesData.map((exercise) => (
               <div key={exercise.id} className="group">

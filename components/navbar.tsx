@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -21,7 +22,14 @@ export function Navbar() {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-primary">Suisseprof</span>
+            <Image
+              src="/images/logo/logo.png"
+              alt="Suisseprof Logo"
+              width={32}
+              height={32}
+              className="h-8 w-8"
+            />
+            <span className="text-2xl font-bold text-black">Suisseprof</span>
           </Link>
 
           {/* Desktop Navigation */}
