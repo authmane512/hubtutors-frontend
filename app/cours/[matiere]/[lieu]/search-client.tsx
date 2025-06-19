@@ -1,28 +1,21 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TutorGrid } from "@/components/tutor-grid"
 import { type Tutor } from "@/components/tutor-card"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { Filter } from "lucide-react"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
 interface SearchClientProps {
   matiere: string
   lieu: string
-  initialTutors?: any[] // Will be passed from server component
 }
 
-export default function SearchClient({ matiere, lieu, initialTutors }: SearchClientProps) {
+export default function SearchClient({ matiere, lieu }: SearchClientProps) {
   const decodedMatiere = decodeURIComponent(matiere)
   const decodedLieu = decodeURIComponent(lieu)
 
@@ -31,6 +24,7 @@ export default function SearchClient({ matiere, lieu, initialTutors }: SearchCli
   const [courseType, setCourseType] = useState("all")
   const [selectedLevels, setSelectedLevels] = useState<string[]>([])
   const [responseTime, setResponseTime] = useState("all")
+  const [responseTimeHours, setResponseTimeHours] = useState([24])
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([])
   const [showFilters, setShowFilters] = useState(false)
 
@@ -112,128 +106,214 @@ export default function SearchClient({ matiere, lieu, initialTutors }: SearchCli
   const levels = ["Primaire", "Secondaire I", "Secondaire II", "Supérieur", "Adultes", "Apprentissage"]
   const languages = ["Français", "Allemand", "Anglais", "Italien", "Espagnol"]
 
-  const handleLevelChange = (level: string, checked: boolean) => {
-    if (checked) {
-      setSelectedLevels([...selectedLevels, level])
-    } else {
-      setSelectedLevels(selectedLevels.filter(l => l !== level))
-    }
-  }
 
-  const handleLanguageChange = (language: string, checked: boolean) => {
-    if (checked) {
-      setSelectedLanguages([...selectedLanguages, language])
-    } else {
-      setSelectedLanguages(selectedLanguages.filter(l => l !== language))
-    }
-  }
 
   const FilterContent = () => (
-    <div className="space-y-6">
+    <div className="flex flex-wrap gap-4 items-center">
       {/* Prix maximal */}
-      <div>
-        <Label className="text-sm font-medium mb-2 block">
-          Prix maximal: {maxPrice[0]} CHF/h
-        </Label>
-        <Slider
-          value={maxPrice}
-          onValueChange={setMaxPrice}
-          max={150}
-          min={20}
-          step={5}
-          className="w-full"
-        />
+      <div className="min-w-[180px]">
+        <Label className="text-sm font-medium mb-2 block">Prix maximal</Label>
+        <Select value={maxPrice[0].toString()} onValueChange={(value) => setMaxPrice([parseInt(value)])}>
+          <SelectTrigger className="h-10">
+            <SelectValue placeholder={`${maxPrice[0]} CHF/h`} />
+          </SelectTrigger>
+          <SelectContent className="w-80">
+            <div className="p-4">
+              <div className="mb-4">
+                <Label className="text-sm font-medium mb-2 block">
+                  Prix maximal: {maxPrice[0]} CHF/h
+                </Label>
+                <Slider
+                  value={maxPrice}
+                  onValueChange={setMaxPrice}
+                  max={150}
+                  min={20}
+                  step={5}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>20 CHF</span>
+                  <span>150 CHF</span>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <SelectItem value="50">Jusqu'à 50 CHF/h</SelectItem>
+                <SelectItem value="60">Jusqu'à 60 CHF/h</SelectItem>
+                <SelectItem value="70">Jusqu'à 70 CHF/h</SelectItem>
+                <SelectItem value="80">Jusqu'à 80 CHF/h</SelectItem>
+                <SelectItem value="100">Jusqu'à 100 CHF/h</SelectItem>
+                <SelectItem value="150">Jusqu'à 150 CHF/h</SelectItem>
+              </div>
+            </div>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Distance maximale */}
       {decodedLieu !== "en ligne" && (
-        <div>
-          <Label className="text-sm font-medium mb-2 block">
-            Distance maximale: {maxDistance[0]} km
-          </Label>
-          <Slider
-            value={maxDistance}
-            onValueChange={setMaxDistance}
-            max={50}
-            min={1}
-            step={1}
-            className="w-full"
-          />
+        <div className="min-w-[160px]">
+          <Label className="text-sm font-medium mb-2 block">Distance maximale</Label>
+          <Select value={maxDistance[0].toString()} onValueChange={(value) => setMaxDistance([parseInt(value)])}>
+            <SelectTrigger className="h-10">
+              <SelectValue placeholder={`${maxDistance[0]} km`} />
+            </SelectTrigger>
+            <SelectContent className="w-80">
+              <div className="p-4">
+                <div className="mb-4">
+                  <Label className="text-sm font-medium mb-2 block">
+                    Distance maximale: {maxDistance[0]} km
+                  </Label>
+                  <Slider
+                    value={maxDistance}
+                    onValueChange={setMaxDistance}
+                    max={50}
+                    min={1}
+                    step={1}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>1 km</span>
+                    <span>50 km</span>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <SelectItem value="5">Jusqu'à 5 km</SelectItem>
+                  <SelectItem value="10">Jusqu'à 10 km</SelectItem>
+                  <SelectItem value="20">Jusqu'à 20 km</SelectItem>
+                  <SelectItem value="30">Jusqu'à 30 km</SelectItem>
+                  <SelectItem value="50">Jusqu'à 50 km</SelectItem>
+                </div>
+              </div>
+            </SelectContent>
+          </Select>
         </div>
       )}
 
       {/* Types de cours */}
-      <div>
-        <Label className="text-sm font-medium mb-2 block">Types de cours</Label>
-        <RadioGroup value={courseType} onValueChange={setCourseType}>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="all" id="all" />
-            <Label htmlFor="all" className="font-normal cursor-pointer">Tous</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="online" id="online" />
-            <Label htmlFor="online" className="font-normal cursor-pointer">En ligne uniquement</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="inperson" id="inperson" />
-            <Label htmlFor="inperson" className="font-normal cursor-pointer">En présentiel uniquement</Label>
-          </div>
-        </RadioGroup>
-      </div>
-
-      {/* Niveaux */}
-      <div>
-        <Label className="text-sm font-medium mb-2 block">Niveaux</Label>
-        <div className="space-y-2">
-          {levels.map((level) => (
-            <div key={level} className="flex items-center space-x-2">
-              <Checkbox
-                id={level}
-                checked={selectedLevels.includes(level)}
-                onCheckedChange={(checked) => handleLevelChange(level, checked as boolean)}
-              />
-              <Label htmlFor={level} className="font-normal cursor-pointer">
-                {level}
-              </Label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Temps de réponse */}
-      <div>
-        <Label className="text-sm font-medium mb-2 block">Temps de réponse maximal</Label>
-        <Select value={responseTime} onValueChange={setResponseTime}>
-          <SelectTrigger>
-            <SelectValue />
+      <div className="min-w-[140px]">
+        <Label className="text-sm font-medium mb-2 block">Type de cours</Label>
+        <Select value={courseType} onValueChange={setCourseType}>
+          <SelectTrigger className="h-10">
+            <SelectValue placeholder="Tous" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tous</SelectItem>
-            <SelectItem value="1h">&lt; 1 heure</SelectItem>
-            <SelectItem value="6h">&lt; 6 heures</SelectItem>
-            <SelectItem value="24h">&lt; 24 heures</SelectItem>
-            <SelectItem value="48h">&lt; 48 heures</SelectItem>
+            <SelectItem value="online">En ligne</SelectItem>
+            <SelectItem value="inperson">Présentiel</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Niveaux */}
+      <div className="min-w-[140px]">
+        <Label className="text-sm font-medium mb-2 block">Niveaux</Label>
+        <Select
+          value={selectedLevels.length > 0 ? selectedLevels[0] : "all"}
+          onValueChange={(value) => {
+            if (value === "all") {
+              setSelectedLevels([])
+            } else {
+              setSelectedLevels([value])
+            }
+          }}
+        >
+          <SelectTrigger className="h-10">
+            <SelectValue placeholder="Tous niveaux" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tous niveaux</SelectItem>
+            {levels.map((level) => (
+              <SelectItem key={level} value={level}>
+                {level}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Temps de réponse */}
+      <div className="min-w-[160px]">
+        <Label className="text-sm font-medium mb-2 block">Temps de réponse</Label>
+        <Select value={responseTime} onValueChange={setResponseTime}>
+          <SelectTrigger className="h-10">
+            <SelectValue placeholder={`< ${responseTimeHours[0]}h`} />
+          </SelectTrigger>
+          <SelectContent className="w-80">
+            <div className="p-4">
+              <div className="mb-4">
+                <Label className="text-sm font-medium mb-2 block">
+                  Temps de réponse maximal: {responseTimeHours[0]}h
+                </Label>
+                <Slider
+                  value={responseTimeHours}
+                  onValueChange={setResponseTimeHours}
+                  max={48}
+                  min={1}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>1h</span>
+                  <span>48h</span>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <SelectItem value="all">Tous</SelectItem>
+                <SelectItem value="1h">&lt; 1 heure</SelectItem>
+                <SelectItem value="6h">&lt; 6 heures</SelectItem>
+                <SelectItem value="24h">&lt; 24 heures</SelectItem>
+                <SelectItem value="48h">&lt; 48 heures</SelectItem>
+              </div>
+            </div>
           </SelectContent>
         </Select>
       </div>
 
       {/* Langues */}
-      <div>
+      <div className="min-w-[140px]">
         <Label className="text-sm font-medium mb-2 block">Langues</Label>
-        <div className="space-y-2">
-          {languages.map((language) => (
-            <div key={language} className="flex items-center space-x-2">
-              <Checkbox
-                id={language}
-                checked={selectedLanguages.includes(language)}
-                onCheckedChange={(checked) => handleLanguageChange(language, checked as boolean)}
-              />
-              <Label htmlFor={language} className="font-normal cursor-pointer">
+        <Select
+          value={selectedLanguages.length > 0 ? selectedLanguages[0] : "all"}
+          onValueChange={(value) => {
+            if (value === "all") {
+              setSelectedLanguages([])
+            } else {
+              setSelectedLanguages([value])
+            }
+          }}
+        >
+          <SelectTrigger className="h-10">
+            <SelectValue placeholder="Toutes langues" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Toutes langues</SelectItem>
+            {languages.map((language) => (
+              <SelectItem key={language} value={language}>
                 {language}
-              </Label>
-            </div>
-          ))}
-        </div>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Reset Button */}
+      <div className="flex items-end">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            setMaxPrice([100])
+            setMaxDistance([10])
+            setCourseType("all")
+            setSelectedLevels([])
+            setResponseTime("all")
+            setResponseTimeHours([24])
+            setSelectedLanguages([])
+          }}
+          className="h-10"
+        >
+          Réinitialiser
+        </Button>
       </div>
     </div>
   )
@@ -253,53 +333,40 @@ export default function SearchClient({ matiere, lieu, initialTutors }: SearchCli
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Desktop Filters */}
-          <div className="hidden lg:block">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Filtres</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <FilterContent />
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Mobile Filter Button */}
-          <div className="lg:hidden mb-4">
-            <Sheet open={showFilters} onOpenChange={setShowFilters}>
-              <SheetTrigger asChild>
-                <Button variant="outline" className="w-full">
-                  <Filter className="mr-2 h-4 w-4" />
-                  Filtres
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-                <SheetHeader>
-                  <SheetTitle>Filtres</SheetTitle>
-                </SheetHeader>
-                <div className="mt-6">
-                  <FilterContent />
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
-
-          {/* Tutors Grid */}
-          <div className="lg:col-span-3">
-            <TutorGrid
-              tutors={tutors}
-              columns="3"
-              showAll={true}
-            />
-
-            {/* Load More Button */}
-            <div className="mt-8 text-center">
-              <Button variant="outline" size="lg" className="min-w-[200px]">
-                Voir plus d'enseignants
+        {/* Filters at Top */}
+        <Card className="mb-8">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">Filtres</CardTitle>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowFilters(!showFilters)}
+                className="lg:hidden"
+              >
+                <Filter className="mr-2 h-4 w-4" />
+                {showFilters ? 'Masquer' : 'Afficher'} les filtres
               </Button>
             </div>
+          </CardHeader>
+          <CardContent className={`${showFilters ? 'block' : 'hidden lg:block'}`}>
+            <FilterContent />
+          </CardContent>
+        </Card>
+
+        {/* Containerized Tutors Grid */}
+        <div className="max-w-6xl mx-auto">
+          <TutorGrid
+            tutors={tutors}
+            columns="3"
+            showAll={true}
+          />
+
+          {/* Load More Button */}
+          <div className="mt-8 text-center">
+            <Button variant="outline" size="lg" className="min-w-[200px]">
+              Voir plus d'enseignants
+            </Button>
           </div>
         </div>
       </div>
