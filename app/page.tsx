@@ -206,26 +206,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col">
-      {/* Promotional Banner */}
-      <section className="bg-primary text-white py-3 px-4">
-        <div className="container mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-3">
-            <div className="text-center md:text-left">
-              <p className="text-sm md:text-base font-medium">
-                30 min de cours gratuit et sans engagement puis dès 20 CHF/heure !
-              </p>
-            </div>
-            <Button
-              variant="secondary"
-              size="sm"
-              className="bg-white text-primary hover:bg-gray-100 font-medium whitespace-nowrap"
-            >
-              Obtenir un cours gratuit
-            </Button>
-          </div>
-        </div>
-      </section>
-
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-primary/10 via-white to-primary/5 pt-20 pb-32">
         <div className="container mx-auto px-4">

@@ -1,14 +1,129 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from "lucide-react"
+import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin, MessageSquare, Clock } from "lucide-react"
+import PhoneInput, { getCountries } from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
+import { useState } from 'react'
 
 export function Footer() {
+  const [phoneValue, setPhoneValue] = useState<string>()
+
+  // Get all countries except one
+  const availableCountries = getCountries().filter(country => country !== 'IL')
+
   return (
-    <footer className="bg-gray-100 pt-16 pb-8">
-      <div className="container mx-auto px-4">
+    <footer className="bg-gray-100">
+      {/* Contact Section */}
+      <div className="bg-primary text-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            {/* Left side - Contact details */}
+            <div className="text-center lg:text-left">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                30 minutes de cours gratuit et sans engagement !
+              </h2>
+              <p className="text-xl md:text-2xl font-semibold mb-6">
+                puis dès seulement 20 CHF par heure !
+              </p>
+
+              {/* Contact details */}
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center justify-center lg:justify-start text-lg">
+                  <Phone className="h-5 w-5 mr-3" />
+                  <span>+41 22 123 45 67</span>
+                </div>
+                <div className="flex items-center justify-center lg:justify-start text-lg">
+                  <Mail className="h-5 w-5 mr-3" />
+                  <span>contact@suisseprof.ch</span>
+                </div>
+                <div className="flex items-center justify-center lg:justify-start text-lg">
+                  <Clock className="h-5 w-5 mr-3" />
+                  <span>24h/24, 7j/7</span>
+                </div>
+              </div>
+
+              {/* WhatsApp button */}
+              <Button
+                size="lg"
+                className="bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-3 text-lg"
+                asChild
+              >
+                <Link href="https://wa.me/+41221234567" target="_blank" rel="noopener noreferrer">
+                  <MessageSquare className="h-5 w-5 mr-2" />
+                  Discuter sur WhatsApp
+                </Link>
+              </Button>
+            </div>
+
+            {/* Right side - Contact form */}
+            <div className="bg-white rounded-lg p-6 shadow-lg">
+              <h3 className="text-xl font-semibold mb-4 text-center text-gray-800">Contactez-nous maintenant</h3>
+              <form className="space-y-4">
+                <div>
+                  <Label htmlFor="promo-firstName" className="text-gray-700">
+                    Prénom
+                  </Label>
+                  <Input
+                    id="promo-firstName"
+                    type="text"
+                    placeholder="Votre prénom"
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="promo-email" className="text-gray-700">
+                    Email
+                  </Label>
+                  <Input
+                    id="promo-email"
+                    type="email"
+                    placeholder="votre.email@exemple.com"
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="promo-phone" className="text-gray-700">
+                    Téléphone
+                  </Label>
+                  <PhoneInput
+                    placeholder="Entrez votre numéro de téléphone"
+                    value={phoneValue}
+                    onChange={setPhoneValue}
+                    defaultCountry="CH"
+                    countries={availableCountries}
+                    className="phone-input-custom"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="promo-message" className="text-gray-700">
+                    Message <span className="text-gray-500 text-sm">(optionnel)</span>
+                  </Label>
+                  <Textarea
+                    id="promo-message"
+                    placeholder="Décrivez vos besoins... (optionnel)"
+                    className="w-full h-20 resize-none"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full bg-primary text-white hover:bg-primary/90 font-semibold"
+                >
+                  Recevoir un cours gratuit
+                </Button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Regular Footer Content */}
+      <div className="pt-16 pb-8">
+        <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* About Section */}
           <div>
@@ -144,6 +259,7 @@ export function Footer() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </footer>
   )
